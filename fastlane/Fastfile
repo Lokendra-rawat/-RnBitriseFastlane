@@ -1,0 +1,135 @@
+# before_all do
+#   ensure_git_branch
+#   ensure_git_status_clean
+#   git_pull
+# end
+
+platform :ios do
+  # iOS Lanes
+
+  desc 'Fetch certificates and provisioning profiles'
+  lane :certificates do
+    match(app_identifier: 'com.app.bundle', type: 'development', readonly: true)
+    match(app_identifier: 'com.app.bundle', type: 'appstore', readonly: true)
+  end
+
+  desc 'Build the iOS application.'
+  private_lane :build do
+    certificates
+    increment_build_number(xcodeproj: './ios/name.xcodeproj')
+    # increment_build_number
+    # increment_version_number
+    gym(scheme: 'name', project: './ios/name.xcodeproj')
+  end
+
+  desc 'Ship to Testflight.'
+  lane :beta do
+    build
+    pilot
+    commit_version_bump(message: 'Bump build', xcodeproj: './ios/name.xcodeproj')
+    push_to_git_remote
+  end
+
+end
+
+
+#########################################################################################
+########################################## ANDROID ######################################
+#########################################################################################
+
+
+platform :android do
+
+  desc "Runs all the tests"
+  lane :test do
+  end
+
+  desc 'Build the Android application.'
+  private_lane :build do
+    versioncode = increment_version_code
+    versionnumber = increment_version_name(
+        gradle_file_path: "./android/app/build.gradle",
+        version_name: ENV['VERSION']
+    )
+    version_name = get_version_name(
+        gradle_file_path:"./android/app/build.gradle",
+        ext_constant_name:"versionName"
+    )
+    puts versioncode
+    puts version_name
+  end
+
+  desc 'Ship to AWS alpha.'
+  lane :beta do
+    build
+    version_name = get_version_name(
+      gradle_file_path:"./android/app/build.gradle",
+      ext_constant_name:"versionName"
+    )
+    key_id = 'AKIA4TTWY2NBGD43YRI7' # ENV['AWS_ACCESS_KEY_ID']
+    key_secret = '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' # ENV['AWS_SECRET_ACCESS_KEY']
+    bucket = 'test-loki-apk' # ENV['DEPLOYMENT_BUCKET']
+    region = 'us-east-2' # ENV['AWS_REGION']
+    # slack_url = ENV['SLACK_URL']
+
+    #arn:aws:s3:::test-loki-apk
+
+    #arn:aws:s3:::test-loki-apk
+
+    aws_s3(
+      access_key: key_id,               # Optional - defaults to AWS Instance Profile Creds.
+      secret_access_key: key_secret, # Optional - defaults to AWS Instance Profile Creds.
+      bucket: bucket,                       # Required from user.
+      region: region,                       # Required from user.
+      apk: './android/app/build/outputs/apk/release/app-release.apk',                             # Required (if not uploading an IPA).
+      app_directory: 'android',                # Optional but nice if you want to put multiple apps in same bucket
+      path: "v_#{version_name}/", # This is actually the default.
+      upload_metadata: true,                          # Upload version.json, plist and HTML. Set to false to skip uploading of these files.
+      version_file_name: 'app_version.json',          # Name of the file to upload to S3. Defaults to 'version.json'
+      version_template_path: 'path/to/erb'            # Path to an ERB to configure the structure of the version JSON file
+    )
+    # slack(
+    #     message: "Partner application successfully released!",
+    #     channel: "#dev-ops",
+    #     success: true,
+    #     payload: {
+    #         "Build Date" => Time.new.to_s,
+    #         "Application Url" => "https://#{bucket}.s3.amazonaws.com/android/index.html",
+    #     },
+    #     slack_url: slack_url
+    # )
+  end
+
+  desc 'Release Build Changes to Master'
+  lane :release do
+    build
+    version_name = get_version_name(
+        gradle_file_path:"./android/app/build.gradle",
+        ext_constant_name:"versionName"
+    )
+    add_git_tag(
+        prefix: "v",
+        tag: version_name
+    )
+    ENV["APP_VERSION_CODE"] = version_name
+    git_commit(path: ['./android/app/build.gradle'], message: 'Bump versionCode [skip ci]')
+    sh("cd ../; npm run upload-release-sourcemaps-to-bugsnag-android")
+    push_to_git_remote
+  end
+
+  desc 'Build the release application build'
+  lane :alpha do
+    versioncode = increment_version_code
+    versionnumber = increment_version_name(
+        gradle_file_path: "./android/app/build.gradle",
+        version_name: ENV['VERSION']
+    )
+    version_name = get_version_name(
+        gradle_file_path:"./android/app/build.gradle",
+        ext_constant_name:"versionName"
+    )
+    gradle(task: "clean assembleRelease", project_dir: 'android/')
+    puts versioncode
+    puts version_name
+  end
+end
