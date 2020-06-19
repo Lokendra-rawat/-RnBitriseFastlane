@@ -55,6 +55,7 @@ platform :android do
         gradle_file_path:"./android/app/build.gradle",
         ext_constant_name:"versionName"
     )
+    gradle(task: "clean assembleRelease", project_dir: 'android/')
     puts versioncode
     puts version_name
   end
