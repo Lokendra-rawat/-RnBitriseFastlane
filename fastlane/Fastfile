@@ -79,7 +79,7 @@ platform :android do
     key_id = 'AKIA4TTWY2NBGD43YRI7' # ENV['AWS_ACCESS_KEY_ID']
     key_secret = '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' # ENV['AWS_SECRET_ACCESS_KEY']
     bucket = 'test-loki-apk' # ENV['DEPLOYMENT_BUCKET']
-    region = 'us-east-2' # ENV['AWS_REGION']
+    region = 'us-east-2'  # ENV['AWS_REGION']
     # slack_url = ENV['SLACK_URL']
 
     #arn:aws:s3:::test-loki-apk
