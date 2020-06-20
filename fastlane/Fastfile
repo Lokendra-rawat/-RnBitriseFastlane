@@ -68,13 +68,13 @@ platform :android do
       ext_constant_name:"versionName"
     )
 
-    firebase_app_distribution(
-      app: '1:673823341833:android:4d0e40e6880ed0d4b6a7d8',
-      testers: 'lokendrarawat194@gmail.com',
-      groups: 'test-group',
-      release_notes: 'I have added awesome features :D',
-      firebase_cli_path: '/usr/local/bin/firebase',
-    )
+    # firebase_app_distribution(
+    #   app: '1:673823341833:android:4d0e40e6880ed0d4b6a7d8',
+    #   testers: 'lokendrarawat194@gmail.com',
+    #   groups: 'test-group',
+    #   release_notes: 'I have added awesome features :D',
+    #   firebase_cli_path: '/usr/local/bin/firebase',
+    # )
 
     key_id = 'AKIA4TTWY2NBGD43YRI7' # ENV['AWS_ACCESS_KEY_ID']
     key_secret = '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' # ENV['AWS_SECRET_ACCESS_KEY']
