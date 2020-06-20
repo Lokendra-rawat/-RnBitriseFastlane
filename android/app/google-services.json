@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "673823341833",
+    "firebase_url": "https://test-bitrise.firebaseio.com",
+    "project_id": "test-bitrise",
+    "storage_bucket": "test-bitrise.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:673823341833:android:4d0e40e6880ed0d4b6a7d8",
+        "android_client_info": {
+          "package_name": "com.rnbitrisefastlane"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "673823341833-eaardk4830gru8s9gj7th1ke0e38roe3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDg1LybFht6a_D8zL1jG2VP1K1nYm-0xHw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "673823341833-eaardk4830gru8s9gj7th1ke0e38roe3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
